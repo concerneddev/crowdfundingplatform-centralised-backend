@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { Owner } from "./Owner.js";
+import { User } from "./User.js";
 import { Donor } from "./Donor.js";
 import { Donation } from "./Donation.js";
 
@@ -12,7 +12,7 @@ const campaignSchema = mongoose.Schema(
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "Owner",
+      ref: "User",
       required: true,
     },
     title: {
@@ -50,16 +50,16 @@ const campaignSchema = mongoose.Schema(
       },
     ],
     donors: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Donor",
-      },
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Donor",
+        },
     ],
     donations: [
-      {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Donation",
-      },
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Donation",
+        },
     ],
   },
   {

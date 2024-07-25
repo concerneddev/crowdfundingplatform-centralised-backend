@@ -12,7 +12,7 @@ export default (request, response, next) => {
 
     try {
         const decoded = jwt.verify(token, JWT_SECRET);
-        request.user = decoded.userId;
+        request.decodedUserId = decoded.userId;
         next();
     } catch(error) {
         response.status(401).send(error.message);

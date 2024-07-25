@@ -18,7 +18,6 @@ const ownerSchema = mongoose.Schema(
       {
         type: mongoose.Schema.Types.ObjectId,
         ref: "Campaign",
-        required: true,
       },
     ],
   },
