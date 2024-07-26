@@ -3,6 +3,7 @@ import { PORT, mongoDBURL } from "./config.js";
 import mongoose, { mongo } from "mongoose";
 import cors from "cors";
 import authRoute from "./routes/authRoute.js";
+import donorRoute from "./routes/donorRoute.js";
 import ownerRoute from "./routes/ownerRoute.js";
 
 const app = express();
@@ -21,6 +22,7 @@ app.get("/", (request, response) => {
 // routes
 app.use("/auth", authRoute);
 app.use("/owner", ownerRoute);
+app.use("/donor", donorRoute);
 
 // connection
 mongoose

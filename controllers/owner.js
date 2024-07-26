@@ -48,7 +48,7 @@ export const createCampaign = async (req, res) => {
     }
 
     // create new Owner
-    const owner = await Owner.findOne({ ownerData: userId });
+    let owner = await Owner.findOne({ ownerData: userId });
     if (!owner) {
       const newOwner = await Owner.create({
         publicKey: req.body.ownerPublicKey,
@@ -60,7 +60,7 @@ export const createCampaign = async (req, res) => {
     // create new Campaign
     const newCampaign = {
       contractAddress: req.body.contractAddress,
-      owner: owner,
+      owner: owner._id,
       title: req.body.title,
       description: req.body.description,
       goalAmount: req.body.goalAmount,
@@ -72,7 +72,7 @@ export const createCampaign = async (req, res) => {
     const campaign = await Campaign.create(newCampaign);
 
     // update owner's "campaigns" field
-    owner.campaigns.push(campaign);
+    owner.campaigns.push(campaign._id);
     await owner.save();
 
     // !!! MODIFY THIS LATER !!!
@@ -156,7 +156,7 @@ export const withdrawCampaign = async (req, res) => {
 
     if(!updatedCampaign) {
         return res.status(404).send({ 
-            message: "Campaign not found, User not the owner or Campaign is already inactive" 
+            message: "Campaign not found, User not the owner or Campaign is inactive" 
         });
     }
 
