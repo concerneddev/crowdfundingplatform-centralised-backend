@@ -1,11 +1,18 @@
 import express from "express";
 import {
-    myProfile
+    campaignById,
+    profile,
+    userCampaigns,
+    userDonations,
+    campaignDonations
 } from "../controllers/user.js";
 import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.get("/profile", auth, myProfile);
-
+router.get("/profile/:id?", auth, profile); 
+router.get("/campaigns/:id?", auth, userCampaigns);
+router.get("/donations/:id?", auth, userDonations);
+router.get("/campaign/:id?", auth, campaignById);
+router.get("/campaigndonations/:id", auth, campaignDonations);
 export default router;
