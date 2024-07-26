@@ -6,6 +6,6 @@ import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/donateCampaign", auth, donateCampaign);
+router.post("/donatecampaign", auth, donateCampaign);
 
 export default router;

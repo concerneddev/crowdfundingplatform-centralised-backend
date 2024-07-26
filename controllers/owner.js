@@ -76,21 +76,13 @@ export const createCampaign = async (req, res) => {
     await owner.save();
 
     // !!! MODIFY THIS LATER !!!
-    // update "role" field of User
-    const updatedUser = await User.findOneAndUpdate(
-      { _id: userId },
-      { $set: { role: "owner" } },
-      { new: true }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).send({ message: "User not found." });
-    }
+    user.role.push("owner");
+    await user.save();
 
     return res.status(201).send({
       owner: owner,
       campaign: campaign,
-      updatedUser: updatedUser,
+      updatedUser: user
     });
   } catch (error) {
     console.log(error.message);

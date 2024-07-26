@@ -1,0 +1,17 @@
+profiles:
+
+ownerOne
+ownerOne
+
+donorOne
+donorOne
+
+donorTwo
+donorTwo
+
+contractAddresses:
+0xbc1615972af72d8f2f856967aec76d1e5856fff9
+
+publicKeys:
+0x518EDf622626C876D894eF4E9F31CCA936C8A8F7
+0xFC5272061F97D5F907C25bC9e7dda26C712Ac803

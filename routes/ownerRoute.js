@@ -7,7 +7,7 @@ import auth from "../middleware/auth.js";
 
 const router = express.Router();
 
-router.post("/createCampaign", auth, createCampaign);
-router.post("/withdrawCampaign", auth, withdrawCampaign);
+router.post("/createcampaign", auth, createCampaign);
+router.post("/withdrawcampaign", auth, withdrawCampaign);
 
 export default router;

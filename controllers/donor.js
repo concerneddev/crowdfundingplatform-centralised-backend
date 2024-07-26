@@ -76,6 +76,10 @@ export const donateCampaign = async (req, res) => {
         });
     }        
     
+    // update user
+    user.role.push("donor");
+    await user.save();
+    
     // update campaign
     const currentAmount = campaign.currentAmount;
     campaign.currentAmount = currentAmount + req.body.donationAmount;

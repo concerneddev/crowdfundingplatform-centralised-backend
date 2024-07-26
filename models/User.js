@@ -15,10 +15,13 @@ const userSchema = mongoose.Schema(
       min: 10,
       max: 20,
     },
-    role: {
-      type: String,
-      enum: ["user", "owner", "donor"],
-    },
+    role: [
+      {
+        type: String,
+        enum: ["user", "owner", "donor"],
+        default: "user"
+      }
+    ],
   },
   {
     timestamps: true,
