@@ -4,7 +4,8 @@ import {
     profile,
     userCampaigns,
     userDonations,
-    campaignDonations
+    campaignDonations,
+    campaignsByTag
 } from "../controllers/user.js";
 import auth from "../middleware/auth.js";
 
@@ -15,4 +16,5 @@ router.get("/campaigns/:id?", auth, userCampaigns);
 router.get("/donations/:id?", auth, userDonations);
 router.get("/campaign/:id?", auth, campaignById);
 router.get("/campaigndonations/:id", auth, campaignDonations);
+router.get("/campaignsbytag/:tag", auth, campaignsByTag);
 export default router;

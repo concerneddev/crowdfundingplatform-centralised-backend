@@ -13,12 +13,12 @@ export const profile = async (req, res) => {
 
     // get the User objects
     let userId;
-    if(req.params.id) {
-        userId = req.params.id
-    } else if(req.decodedUserId){
-        userId = req.decodedUserId;
+    if (req.params.id) {
+      userId = req.params.id;
+    } else if (req.decodedUserId) {
+      userId = req.decodedUserId;
     } else {
-        return res.status(401).send({message: "Invalid link." });
+      return res.status(401).send({ message: "Invalid link." });
     }
 
     let user = await User.findById(userId);
@@ -67,12 +67,12 @@ export const userCampaigns = async (req, res) => {
 
     // get the User object
     let userId;
-    if(req.params.id) {
-        userId = req.params.id
-    } else if(req.decodedUserId){
-        userId = req.decodedUserId;
+    if (req.params.id) {
+      userId = req.params.id;
+    } else if (req.decodedUserId) {
+      userId = req.decodedUserId;
     } else {
-        return res.status(401).send({message: "Invalid link." });
+      return res.status(401).send({ message: "Invalid link." });
     }
 
     let user = await User.findById(userId);
@@ -110,12 +110,12 @@ export const userDonations = async (req, res) => {
 
     // get the User object
     let userId;
-    if(req.params.id) {
-        userId = req.params.id
-    } else if(req.decodedUserId){
-        userId = req.decodedUserId;
+    if (req.params.id) {
+      userId = req.params.id;
+    } else if (req.decodedUserId) {
+      userId = req.decodedUserId;
     } else {
-        return res.status(401).send({message: "Invalid link." });
+      return res.status(401).send({ message: "Invalid link." });
     }
 
     let user = await User.findById(userId);
@@ -184,7 +184,31 @@ export const campaignDonations = async (req, res) => {
     const donations = campaign.donations;
 
     return res.status(201).send({
-        donations: donations
+      donations: donations,
+    });
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).send(error.message);
+  }
+};
+
+// campaigns by tags
+export const campaignsByTag = async (req, res) => {
+  try {
+    // check if user is logged in
+    if (!req.decodedUserId) {
+      return res.status(401).send({ message: "Access denied." });
+    }
+
+    const tag = req.params.tag;
+    const campaigns = await Campaign.find({ tags: { $in: [tag] } }).populate("donations");
+
+    if(!campaigns) {
+        return res.status(404).send({ message: "No campaigns with that tag." });
+    }
+
+    return res.status(201).send({
+        campaigns: campaigns
     })
   } catch (error) {
     console.log(error.message);
