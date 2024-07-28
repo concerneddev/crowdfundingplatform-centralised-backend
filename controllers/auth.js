@@ -8,6 +8,7 @@ const JWT_SECRET = process.env.SECRET_KEY;
 
 export const register = async (req, res) => {
   try {
+    console.log("Using auth/register")
     // validate fields
     if (!req.body.username || !req.body.password) {
       return res.status(400).send({
@@ -21,7 +22,7 @@ export const register = async (req, res) => {
     // unique username
     let user = await User.findOne({ username });
     if (user) {
-      return res.send(400).send({ message: "User already exists." });
+      return res.status(400).send({ message: "User already exists." });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
@@ -31,10 +32,12 @@ export const register = async (req, res) => {
       role: "user",
     });
 
-    res.status(201).send({ message: "User registered successfully." });
+    return res.status(201).send({ message: "User registered successfully." });
+    
   } catch (error) {
     console.log(error.message);
-    res.status(500).send({ message: error.message });
+    return res.status(500).send({ message: error.message });
+  
   }
 };
 
@@ -61,23 +64,20 @@ export const login = async (req, res) => {
     // compare the password
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch) {
-      return res.status(400).send({ message: "Invalid credentials." });
+      return res.status(401).send({ message: "Invalid credentials." });
     }
 
     // generate JWT
     const payload = { userId: user._id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 3600 });
 
-    res.send({ token });
+    return res.status(201).send({ token });
   } catch (error) {
     console.log(error.message);
-    res.status(500).send({ message: error.message });
+    return res.status(500).send({ message: error.message });
   }
 };
 
 export const logout = async (req, res) => {
-  res.send({ message: "User logged Out" });
-
-  // delete the JWT token from client side
-  // that logic to be written in the frontend part
+  return res.send({ message: "User logged Out" });
 };
