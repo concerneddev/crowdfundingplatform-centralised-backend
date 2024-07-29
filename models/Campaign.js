@@ -50,16 +50,16 @@ const campaignSchema = mongoose.Schema(
       },
     ],
     donors: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Donor",
-        },
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Donor",
+      },
     ],
     donations: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Donation",
-        },
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Donation",
+      },
     ],
   },
   {

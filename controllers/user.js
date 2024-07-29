@@ -2,6 +2,7 @@ import { User } from "../models/User.js";
 import { Owner } from "../models/Owner.js";
 import { Donor } from "../models/Donor.js";
 import { Campaign } from "../models/Campaign.js";
+import { Donation } from "../models/Donation.js";
 
 // get profile of other user or logged in user
 export const profile = async (req, res) => {
@@ -30,24 +31,37 @@ export const profile = async (req, res) => {
     let ownerPublicKey;
     let donor;
     let donorPublicKey;
-    let campaigns;
-    let donations;
+    let campaigns =[""];
+    let donations = [""];  
+    let publicKey;
 
     if (user.role.includes("owner")) {
-      owner = await Owner.findOne({ ownerData: userId }).populate("campaigns");
+      owner = await Owner.findOne({ ownerData: userId })
+        .populate({
+          path: 'campaigns', 
+          populate: { path: 'donations' } 
+        });
       campaigns = owner.campaigns;
       ownerPublicKey = owner.publicKey;
     }
+    
     if (user.role.includes("donor")) {
       donor = await Donor.findOne({ donorData: userId }).populate("donations");
       donations = donor.donations;
       donorPublicKey = donor.publicKey;
     }
 
+    if(donorPublicKey) {
+      publicKey = donorPublicKey;
+    } else if(ownerPublicKey) {
+      publicKey = ownerPublicKey;
+    } else {
+      publicKey = null;
+    }
+
     return res.status(201).send({
       user: user,
-      ownerPublicKey: ownerPublicKey,
-      donorPublicKey: donorPublicKey,
+      publicKey: publicKey,
       campaigns: campaigns,
       donations: donations,
     });
@@ -154,12 +168,14 @@ export const campaignById = async (req, res) => {
 
     const campaignId = req.params.id;
     const campaign = await Campaign.findById(campaignId).populate("donations");
+    const donations = campaign.donations;
     if (!campaign) {
       return res.status(404).send({ message: "Campaign not found. " });
     }
 
     return res.status(201).send({
       campaign: campaign,
+      donations: donations
     });
   } catch (error) {
     console.log(error.message);
