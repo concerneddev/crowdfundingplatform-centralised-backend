@@ -31,29 +31,28 @@ export const profile = async (req, res) => {
     let ownerPublicKey;
     let donor;
     let donorPublicKey;
-    let campaigns =[""];
-    let donations = [""];  
+    let campaigns = [""];
+    let donations = [""];
     let publicKey;
 
     if (user.role.includes("owner")) {
-      owner = await Owner.findOne({ ownerData: userId })
-        .populate({
-          path: 'campaigns', 
-          populate: { path: 'donations' } 
-        });
+      owner = await Owner.findOne({ ownerData: userId }).populate({
+        path: "campaigns",
+        populate: { path: "donations" },
+      });
       campaigns = owner.campaigns;
       ownerPublicKey = owner.publicKey;
     }
-    
+
     if (user.role.includes("donor")) {
       donor = await Donor.findOne({ donorData: userId }).populate("donations");
       donations = donor.donations;
       donorPublicKey = donor.publicKey;
     }
 
-    if(donorPublicKey) {
+    if (donorPublicKey) {
       publicKey = donorPublicKey;
-    } else if(ownerPublicKey) {
+    } else if (ownerPublicKey) {
       publicKey = ownerPublicKey;
     } else {
       publicKey = null;
@@ -158,6 +157,23 @@ export const userDonations = async (req, res) => {
   }
 };
 
+// list of campaigns arranged in recency
+export const campaignsListRecent = async (req, res) => {
+  try {
+    const campaigns = await Campaign.find().sort("-createdAt").populate("donations")
+    if (!campaigns) {
+      return res.status(404).send({ message: "Campaign not found. " });
+    }
+
+    console.log("Backend: campaigns: ", campaigns);
+
+    return res.status(200).send(campaigns);
+  } catch (err) {
+    console.error(err);
+    return res.status(500).send(error.message);
+  }
+};
+
 // get a campaign by id
 export const campaignById = async (req, res) => {
   try {
@@ -175,7 +191,7 @@ export const campaignById = async (req, res) => {
 
     return res.status(201).send({
       campaign: campaign,
-      donations: donations
+      donations: donations,
     });
   } catch (error) {
     console.log(error.message);
@@ -217,15 +233,17 @@ export const campaignsByTag = async (req, res) => {
     }
 
     const tag = req.params.tag;
-    const campaigns = await Campaign.find({ tags: { $in: [tag] } }).populate("donations");
+    const campaigns = await Campaign.find({ tags: { $in: [tag] } }).populate(
+      "donations"
+    );
 
-    if(!campaigns) {
-        return res.status(404).send({ message: "No campaigns with that tag." });
+    if (!campaigns) {
+      return res.status(404).send({ message: "No campaigns with that tag." });
     }
 
     return res.status(201).send({
-        campaigns: campaigns
-    })
+      campaigns: campaigns,
+    });
   } catch (error) {
     console.log(error.message);
     return res.status(500).send(error.message);
@@ -241,17 +259,16 @@ export const donationById = async (req, res) => {
 
     const donationId = req.params.id;
     const donation = await Donation.findById(donationId).populate({
-      path: 'donor', 
-      populate: { path: 'donorData' } 
+      path: "donor",
+      populate: { path: "donorData" },
     });
     if (!donation) {
       return res.status(404).send({ message: "Campaign not found. " });
     }
 
     return res.status(201).send({
-      donation: donation
+      donation: donation,
     });
-
   } catch (error) {
     console.log(error.message);
     return res.status(500).send(error.message);
