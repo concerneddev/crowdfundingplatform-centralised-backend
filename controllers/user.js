@@ -231,3 +231,29 @@ export const campaignsByTag = async (req, res) => {
     return res.status(500).send(error.message);
   }
 };
+
+export const donationById = async (req, res) => {
+  try {
+    // check if user is logged in
+    if (!req.decodedUserId) {
+      return res.status(401).send({ message: "Access denied." });
+    }
+
+    const donationId = req.params.id;
+    const donation = await Donation.findById(donationId).populate({
+      path: 'donor', 
+      populate: { path: 'donorData' } 
+    });
+    if (!donation) {
+      return res.status(404).send({ message: "Campaign not found. " });
+    }
+
+    return res.status(201).send({
+      donation: donation
+    });
+
+  } catch (error) {
+    console.log(error.message);
+    return res.status(500).send(error.message);
+  }
+};
