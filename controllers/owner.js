@@ -8,7 +8,7 @@ this will be called when a new Campaign contract is deployed.
 Event emitted:
 event CampaignContractCreated(address campaignContract, address owner, uint256 goalAmount);
   
-request.body:
+request.body
 {
     "contractAddress": "0xbc1615972af72d8f2f856967aec76d1e5856ffe9",
     "ownerPublicKey": "0x518EDf622626C876D894eF4E9F31CCA936C8A7F7",

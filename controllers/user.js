@@ -182,13 +182,17 @@ export const campaignById = async (req, res) => {
       return res.status(401).send({ message: "Access denied." });
     }
 
+    let donations;
     const campaignId = req.params.id;
     const campaign = await Campaign.findById(campaignId).populate("donations");
-    const donations = campaign.donations;
+    donations = campaign.donations;
+    if(!donations) {
+      donations = [""];
+    }
     if (!campaign) {
       return res.status(404).send({ message: "Campaign not found. " });
     }
-
+    
     return res.status(201).send({
       campaign: campaign,
       donations: donations,
