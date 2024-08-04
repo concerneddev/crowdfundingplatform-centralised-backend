@@ -170,7 +170,7 @@ export const campaignsListRecent = async (req, res) => {
     return res.status(200).send(campaigns);
   } catch (err) {
     console.error(err);
-    return res.status(500).send(error.message);
+    return res.status(500).send(err.message);
   }
 };
 
@@ -184,15 +184,16 @@ export const campaignById = async (req, res) => {
 
     let donations;
     const campaignId = req.params.id;
-    const campaign = await Campaign.findById(campaignId).populate("donations");
-    donations = campaign.donations;
-    if(!donations) {
-      donations = [""];
-    }
+    console.log("Controller_user: campaignId: ", campaignId);
+    const campaign = await Campaign.findById(campaignId);
     if (!campaign) {
       return res.status(404).send({ message: "Campaign not found. " });
     }
-    
+
+    donations = campaign.donations;
+  
+
+    console.log(campaign);
     return res.status(201).send({
       campaign: campaign,
       donations: donations,
