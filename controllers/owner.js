@@ -52,12 +52,18 @@ export const createCampaign = async (req, res) => {
     if (!owner) {
       const newOwner = await Owner.create({
         publicKey: req.body.ownerPublicKey,
-        ownerData: user,
+        ownerData: user._id,
       });
       owner = newOwner;
     }
 
     // create new Campaign
+    let campaign = await Campaign.findOne({ contractAddress: req.body.contractAddress});
+
+    if(campaign) {
+      return res.status(401).send({message: "Duplicate contract address!"});
+    }
+
     const newCampaign = {
       contractAddress: req.body.contractAddress,
       owner: owner._id,
@@ -69,7 +75,7 @@ export const createCampaign = async (req, res) => {
       campaignState: "active",
       tags: req.body.tags,
     };
-    const campaign = await Campaign.create(newCampaign);
+    campaign = await Campaign.create(newCampaign);
 
     // update owner's "campaigns" field
     owner.campaigns.push(campaign._id);

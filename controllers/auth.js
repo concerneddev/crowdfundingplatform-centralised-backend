@@ -70,8 +70,9 @@ export const login = async (req, res) => {
     // generate JWT
     const payload = { userId: user._id };
     const token = jwt.sign(payload, JWT_SECRET, { expiresIn: 86400 }); //24*3600
+    const userId = user._id;
 
-    return res.status(201).send({ token });
+    return res.status(201).send({ token: token,  userId: userId});
   } catch (error) {
     console.log(error.message);
     return res.status(500).send({ message: error.message });

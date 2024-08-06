@@ -185,7 +185,7 @@ export const campaignById = async (req, res) => {
     let donations;
     const campaignId = req.params.id;
     console.log("Controller_user: campaignId: ", campaignId);
-    const campaign = await Campaign.findById(campaignId);
+    const campaign = await Campaign.findById(campaignId).populate("owner");
     if (!campaign) {
       return res.status(404).send({ message: "Campaign not found. " });
     }

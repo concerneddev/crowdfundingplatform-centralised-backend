@@ -2,6 +2,7 @@ import mongoose from "mongoose";
 import { User } from "./User.js";
 import { Donor } from "./Donor.js";
 import { Donation } from "./Donation.js";
+import { Owner } from "./Owner.js";
 
 const campaignSchema = mongoose.Schema(
   {
@@ -12,7 +13,7 @@ const campaignSchema = mongoose.Schema(
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
+      ref: "Owner",
       required: true,
     },
     title: {
