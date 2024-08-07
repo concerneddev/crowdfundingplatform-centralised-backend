@@ -9,7 +9,6 @@ const campaignSchema = mongoose.Schema(
     contractAddress: {
       type: String,
       required: true,
-      unique: true,
     },
     owner: {
       type: mongoose.Schema.Types.ObjectId,
