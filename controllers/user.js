@@ -3,6 +3,7 @@ import { Owner } from "../models/Owner.js";
 import { Donor } from "../models/Donor.js";
 import { Campaign } from "../models/Campaign.js";
 import { Donation } from "../models/Donation.js";
+import mongoose from "mongoose";
 
 // get profile of other user or logged in user
 export const profile = async (req, res) => {
@@ -160,7 +161,9 @@ export const userDonations = async (req, res) => {
 // list of campaigns arranged in recency
 export const campaignsListRecent = async (req, res) => {
   try {
-    const campaigns = await Campaign.find().sort("-createdAt").populate("donations")
+    const campaigns = await Campaign.find()
+      .sort("-createdAt")
+      .populate("donations");
     if (!campaigns) {
       return res.status(404).send({ message: "Campaign not found. " });
     }
@@ -191,7 +194,6 @@ export const campaignById = async (req, res) => {
     }
 
     donations = campaign.donations;
-  
 
     console.log(campaign);
     return res.status(201).send({
@@ -252,6 +254,34 @@ export const campaignsByTag = async (req, res) => {
   } catch (error) {
     console.log(error.message);
     return res.status(500).send(error.message);
+  }
+};
+
+// returns list of unique tags
+export const tagsList = async (req, res) => {
+  try {
+    if (!req.decodedUserId) {
+      return res.status(401).send({ message: "Access denied." });
+    }
+
+    const pipeline = [
+      { $unwind: "$tags" },
+      { $group: { _id: "$tags" } },
+      { $project: { _id: 0, tag: '$_id' } }
+    ];
+
+    const results = await Campaign.aggregate(pipeline);
+    console.log("results: ", results);
+    
+    const uniqueTags = results.map(doc => doc.tag);
+
+    console.log("UniqueTags: ", uniqueTags);
+    res.status(200).send({
+      tags: uniqueTags
+    });
+  } catch (error) {
+    console.error("Error: ", error);
+    res.status(500).send({ message: error.message });
   }
 };
 
