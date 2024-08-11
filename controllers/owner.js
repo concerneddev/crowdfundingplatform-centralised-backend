@@ -47,6 +47,17 @@ export const createCampaign = async (req, res) => {
       });
     }
 
+    // handle image
+    console.log("imagePath: req.file: ", req.file);
+    const imagePath = req.file
+      ? `/uploads/campaigns/${req.file.filename}`
+      : null;
+    if(!imagePath) {
+      return res.status(400).send({
+        message: "Image not sent"
+      })
+    };
+    
     // create new Owner
     let owner = await Owner.findOne({ ownerData: userId });
     if (!owner) {
@@ -58,22 +69,27 @@ export const createCampaign = async (req, res) => {
     }
 
     // create new Campaign
-    let campaign = await Campaign.findOne({ contractAddress: req.body.contractAddress});
+    let campaign = await Campaign.findOne({
+      contractAddress: req.body.contractAddress,
+    });
 
-    if(campaign) {
-      return res.status(401).send({message: "Duplicate contract address!"});
+    if (campaign) {
+      return res.status(401).send({ message: "Duplicate contract address!" });
     }
 
+    const tagsArray = JSON.parse(req.body.tags);
+    const goalAmount = parseFloat(req.body.goalAmount);
     const newCampaign = {
       contractAddress: req.body.contractAddress,
       owner: owner._id,
       title: req.body.title,
       description: req.body.description,
-      goalAmount: req.body.goalAmount,
+      goalAmount: goalAmount,
       currentAmount: 0,
       finalAmount: 0,
       campaignState: "active",
-      tags: req.body.tags,
+      tags: tagsArray,
+      image: imagePath
     };
     campaign = await Campaign.create(newCampaign);
 
@@ -88,7 +104,7 @@ export const createCampaign = async (req, res) => {
     return res.status(201).send({
       owner: owner,
       campaign: campaign,
-      updatedUser: user
+      updatedUser: user,
     });
   } catch (error) {
     console.log(error.message);
@@ -128,39 +144,42 @@ export const withdrawCampaign = async (req, res) => {
     }
 
     // validate fields
-    if (
-        !req.body.contractAddress ||
-        !req.body.finalAmount
-      ) {
-        return res.status(400).send({
-          message:
-            "Send all fields: contractAddress, finalAmount",
-        });
+    if (!req.body.contractAddress || !req.body.finalAmount) {
+      return res.status(400).send({
+        message: "Send all fields: contractAddress, finalAmount",
+      });
     }
-    
+
     // update Campaign
     const contractAddress = req.body.contractAddress;
     const finalAmount = req.body.finalAmount;
-    
+
     const updatedCampaign = await Campaign.findOneAndUpdate(
-        { 
-            contractAddress: contractAddress,
-            owner: owner._id, // campaign belongs to the user
-            campaignState: { $ne: "inactive" }, // campaign is active
+      {
+        contractAddress: contractAddress,
+        owner: owner._id, // campaign belongs to the user
+        campaignState: { $ne: "inactive" }, // campaign is active
+      },
+      {
+        $set: {
+          currentAmount: 0,
+          finalAmount: finalAmount,
+          campaignState: "inactive",
         },
-        { $set: { currentAmount: 0, finalAmount: finalAmount, campaignState: "inactive" }},
-        { new: true }
+      },
+      { new: true }
     );
 
-    if(!updatedCampaign) {
-        return res.status(404).send({ 
-            message: "Campaign not found, User not the owner or Campaign is inactive" 
-        });
+    if (!updatedCampaign) {
+      return res.status(404).send({
+        message:
+          "Campaign not found, User not the owner or Campaign is inactive",
+      });
     }
 
     return res.status(201).send({
-        updatedCampaign: updatedCampaign
-    })
+      updatedCampaign: updatedCampaign,
+    });
   } catch (error) {
     console.log(error.message);
     res.status(500).send({ message: error.message });

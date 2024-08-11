@@ -49,6 +49,9 @@ const campaignSchema = mongoose.Schema(
         type: String,
       },
     ],
+    image: {
+      type: String,
+    },
     donors: [
       {
         type: mongoose.Schema.Types.ObjectId,
