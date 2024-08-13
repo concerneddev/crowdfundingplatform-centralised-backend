@@ -1,6 +1,8 @@
 import express from "express";
 import { PORT, mongoDBURL } from "./config.js";
 import mongoose, { mongo } from "mongoose";
+import path from 'path';
+import { fileURLToPath } from "url";
 import cors from "cors";
 import authRoute from "./routes/authRoute.js";
 import donorRoute from "./routes/donorRoute.js";
@@ -9,9 +11,14 @@ import userRoute from "./routes/userRoute.js";
 
 const app = express();
 
+
 // middleware
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 app.use(express.json());
 app.use(cors());
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.get("/", (request, response) => {
   console.log(request);

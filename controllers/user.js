@@ -188,6 +188,7 @@ export const campaignById = async (req, res) => {
     let donations;
     const campaignId = req.params.id;
     console.log("Controller_user: campaignId: ", campaignId);
+
     const campaign = await Campaign.findById(campaignId).populate("owner");
     if (!campaign) {
       return res.status(404).send({ message: "Campaign not found. " });
@@ -195,9 +196,14 @@ export const campaignById = async (req, res) => {
 
     donations = campaign.donations;
 
+    const imageUrl = campaign.image ? `${req.protocol}://${req.get('host')}${campaign.image}`: null;
+
     console.log(campaign);
     return res.status(201).send({
-      campaign: campaign,
+      campaign: {
+        ...campaign.toObject(),
+        image: imageUrl,
+      },
       donations: donations,
     });
   } catch (error) {
