@@ -41,7 +41,14 @@ export const profile = async (req, res) => {
         path: "campaigns",
         populate: { path: "donations" },
       });
-      campaigns = owner.campaigns;
+      const _campaigns = owner.campaigns;
+      campaigns = await _campaigns.map((campaign) => {
+        const imageUrl = campaign.image ? `${req.protocol}://${req.get('host')}${campaign.image}` : null;
+        return {
+          ...campaign.toObject(),
+          image: imageUrl,
+        };
+      });
       ownerPublicKey = owner.publicKey;
     }
 
@@ -161,21 +168,29 @@ export const userDonations = async (req, res) => {
 // list of campaigns arranged in recency
 export const campaignsListRecent = async (req, res) => {
   try {
-    const campaigns = await Campaign.find()
+    const _campaigns = await Campaign.find()
       .sort("-createdAt")
       .populate("donations");
-    if (!campaigns) {
-      return res.status(404).send({ message: "Campaign not found. " });
+      
+    if (!_campaigns || _campaigns.length === 0) {
+      return res.status(404).send({ message: "No campaigns found." });
     }
 
-    console.log("Backend: campaigns: ", campaigns);
+    const campaigns = await _campaigns.map((campaign) => {
+      const imageUrl = campaign.image ? `${req.protocol}://${req.get('host')}${campaign.image}` : null;
+      return {
+      ...campaign.toObject(),
+        image: imageUrl,
+      };
+    });
 
-    return res.status(200).send(campaigns);
+    return res.status(200).send({ campaigns: campaigns });
   } catch (err) {
     console.error(err);
     return res.status(500).send(err.message);
   }
 };
+
 
 // get a campaign by id
 export const campaignById = async (req, res) => {
@@ -254,8 +269,16 @@ export const campaignsByTag = async (req, res) => {
       return res.status(404).send({ message: "No campaigns with that tag." });
     }
 
+    const _campaigns = await campaigns.map((campaign) => {
+      const imageUrl = campaign.image ? `${req.protocol}://${req.get('host')}${campaign.image}` : null;
+      return {
+        ...campaign.toObject(),
+        image: imageUrl,
+      };
+    });
+
     return res.status(201).send({
-      campaigns: campaigns,
+      campaigns: _campaigns,
     });
   } catch (error) {
     console.log(error.message);
