@@ -8,8 +8,9 @@ import {
     campaignsByTag,
     donationById,
     campaignsListRecent,
-    tagsList
+    tagsList,
 } from "../controllers/user.js";
+import { checkHealthDb, checkHealthServer } from "../controllers/healthCheck.js";
 import auth from "../middleware/auth.js";
 
 const router = express.Router();
@@ -23,4 +24,7 @@ router.get("/campaigndonations/:id", auth, campaignDonations);
 router.get("/tagslist", auth, tagsList);
 router.get("/campaignsbytag/:tag", auth, campaignsByTag);
 router.get("/donation/:id", auth, donationById);
+router.get("/healthdb", checkHealthDb);
+router.get("/healthserver", checkHealthServer);
+
 export default router;
